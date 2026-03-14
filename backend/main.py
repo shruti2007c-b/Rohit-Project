@@ -30,8 +30,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 data = pd.read_csv(os.path.join(BASE_DIR, "data", "flood_replay.csv"))
 data["Date"] = pd.to_datetime(data["Date"])
 
-with open(os.path.join(BASE_DIR, "geo", "kolhapur.geojson")) as f:
-    villages = json.load(f)
+villages = gpd.read_file(os.path.join(BASE_DIR, "geo", "kolhapur.geojson"))
+villages = villages.to_crs(epsg=4326)
 # 🔥 IMPORTANT: Ensure village names are lowercase
 villages["village_na"] = villages["village_na"].str.lower()
 
