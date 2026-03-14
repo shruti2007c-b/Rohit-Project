@@ -46,53 +46,59 @@ function createNumberedMarker(number, color) {
 // ----------------------------
 async function loadVillages() {
 
-    const res = await fetch(`${API_BASE}/api/map/villages`);
-    const data = await res.json();
+    try {
+        const res = await fetch(`${API_BASE}/api/map/villages`);
 
-    let counter = 1;
-
-    villageLayer = L.geoJSON(data, {
-
-        style: function(feature) {
-            return {
-                color: "#1e293b",
-                weight: 1,
-                fillColor: "green",
-                fillOpacity: 0.6
-            };
-        },
-
-        pointToLayer: (feature, latlng) => {
-            return L.marker(latlng, {
-                icon: createNumberedMarker(counter++, "green")
-            });
-        },
-
-        onEachFeature: (feature, layer) => {
-
-            // Correct property name
-            const villageName = feature.properties.village_na;
-
-            layer.bindPopup(
-                `<strong>${villageName}</strong>`
-            );
-
-            // Hover glow effect
-            layer.on({
-                mouseover: function (e) {
-                    e.target.setStyle({
-                        weight: 2,
-                        color: "#ffffff",
-                        fillOpacity: 0.8
-                    });
-                },
-                mouseout: function (e) {
-                    villageLayer.resetStyle(e.target);
-                }
-            });
+        if (!res.ok) {
+            throw new Error("Village API failed");
         }
 
-    }).addTo(map);
+        const data = await res.json();
+
+        let counter = 1;
+
+        villageLayer = L.geoJSON(data, {
+
+            style: function(feature) {
+                return {
+                    color: "#1e293b",
+                    weight: 1,
+                    fillColor: "green",
+                    fillOpacity: 0.6
+                };
+            },
+
+            pointToLayer: (feature, latlng) => {
+                return L.marker(latlng, {
+                    icon: createNumberedMarker(counter++, "green")
+                });
+            },
+
+            onEachFeature: (feature, layer) => {
+
+                const villageName = feature.properties.village_na;
+
+                layer.bindPopup(`<strong>${villageName}</strong>`);
+
+                layer.on({
+                    mouseover: function (e) {
+                        e.target.setStyle({
+                            weight: 2,
+                            color: "#ffffff",
+                            fillOpacity: 0.8
+                        });
+                    },
+                    mouseout: function (e) {
+                        villageLayer.resetStyle(e.target);
+                    }
+                });
+            }
+
+        }).addTo(map);
+
+    } catch (error) {
+        console.error("Village map failed to load:", error);
+    }
 }
 
 
@@ -149,6 +155,11 @@ async function updateSystem(hour) {
     // UPDATE MAP COLORS
     // ----------------------------
     let markerIndex = 1;
+
+    if (!villageLayer) {
+    console.log("Village layer not loaded yet");
+    return;
+}
 
     villageLayer.eachLayer(layer => {
 
