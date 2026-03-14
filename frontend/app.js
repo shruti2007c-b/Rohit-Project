@@ -1,4 +1,4 @@
-const API_BASE = "https://rohit-project-gvn9.onrender.com/docs";
+const API_BASE = "https://rohit-project-gvn9.onrender.com";
 
 // ----------------------------
 // INITIALIZE MAP
