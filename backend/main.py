@@ -16,7 +16,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://rohit-project-theta.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,7 +31,7 @@ data = pd.read_csv(os.path.join(BASE_DIR, "data", "flood_replay.csv"))
 data["Date"] = pd.to_datetime(data["Date"])
 
 villages = gpd.read_file(os.path.join(BASE_DIR, "geo", "kolhapur.geojson"))
-
+villages = villages.to_crs(epsg=4326)
 # 🔥 IMPORTANT: Ensure village names are lowercase
 villages["village_na"] = villages["village_na"].str.lower()
 
